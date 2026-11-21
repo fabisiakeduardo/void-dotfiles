@@ -49,9 +49,9 @@ launch() {
     wait_boot || { notify-send -u critical "Windows VM" "Boot timeout — see $CONSOLE"; exit 1; }
   fi
 
-  # Prefer native RDP when the guest's RDP stack answers; otherwise fall back
-  # to the noVNC web console (works on every build, incl. broken-RDP 25H2).
-  if rdp_ready || wait_rdp; then
+  # RDP is broken on Windows 11 25H2 (dockur issue #679) — go straight to
+  # the noVNC console unless the guest's RDP stack already answers.
+  if rdp_ready; then
     local scale rdp_scale=""
     scale=$(gsettings get org.gnome.desktop.interface scaling-factor 2>/dev/null | awk '{print $2}')
     [[ $scale =~ ^[0-9]+$ ]] && (( scale >= 2 )) && rdp_scale="/scale:180"
