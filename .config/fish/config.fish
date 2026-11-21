@@ -179,3 +179,10 @@ end
 
 # Dotfiles bare repo (git --git-dir=~/.dotfiles --work-tree=~)
 alias dotfiles 'git --git-dir=$HOME/.dotfiles --work-tree=$HOME'
+
+# Atuin — fuzzy shell history (Ctrl+R / up arrow)
+if type -q atuin
+    atuin init fish | source
+end
+
+alias lzd 'lazydocker'
