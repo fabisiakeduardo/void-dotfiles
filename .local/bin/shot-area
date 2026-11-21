@@ -1,0 +1,6 @@
+#!/bin/sh
+# Area screenshot -> file + clipboard
+dir="$HOME/Pictures/Screenshots"
+mkdir -p "$dir"
+f="$dir/$(date +%Y-%m-%d_%H-%M-%S).png"
+gnome-screenshot --area --file="$f" && wl-copy < "$f"
