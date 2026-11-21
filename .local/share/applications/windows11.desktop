@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Windows 11
 Comment=Windows 11 VM (Docker/KVM)
-Exec=/home/eduardo/.local/bin/windows
+Exec=/home/eduardo/.local/bin/windows-vm launch
 Icon=/home/eduardo/.local/share/icons/windows.png
 Type=Application
 Categories=System;

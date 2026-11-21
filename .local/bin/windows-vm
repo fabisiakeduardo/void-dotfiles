@@ -1,0 +1,49 @@
+#!/bin/bash
+# Windows 11 VM (dockur/windows) — omarchy-style launcher
+# usage: windows-vm [launch|stop|status|console] [--keep-alive]
+
+COMPOSE_FILE="$HOME/win11/docker-compose.yml"
+CONTAINER="windows11"
+
+launch() {
+  local keep_alive=false
+  [[ $1 = "--keep-alive" || $1 = "-k" ]] && keep_alive=true
+
+  if [[ ! -f $COMPOSE_FILE ]]; then
+    echo "Windows VM not configured (missing $COMPOSE_FILE)"; exit 1
+  fi
+
+  if [[ $(docker inspect --format='{{.State.Status}}' "$CONTAINER" 2>/dev/null) != "running" ]]; then
+    notify-send "Starting Windows VM" "This can take 15-30 seconds" -t 15000 2>/dev/null
+    docker compose -f "$COMPOSE_FILE" up -d || { notify-send -u critical "Windows VM" "Failed to start"; exit 1; }
+    local n=0
+    until docker logs "$CONTAINER" 2>&1 | grep -qi "windows started successfully"; do
+      sleep 2; (( ++n > 90 )) && { echo "Timeout waiting for Windows"; exit 1; }
+    done
+  fi
+
+  # GNOME scale -> RDP scale
+  local scale rdp_scale=""
+  scale=$(gsettings get org.gnome.desktop.interface scaling-factor 2>/dev/null | awk '{print $2}')
+  [[ $scale =~ ^[0-9]+$ ]] && (( scale >= 2 )) && rdp_scale="/scale:180"
+
+  xfreerdp3 /u:"eduardo" /p:"admin" /v:127.0.0.1:3389 -grab-keyboard \
+    /sound /microphone /clipboard /cert:ignore /title:"Windows 11" \
+    /dynamic-resolution /gfx:AVC444 \
+    /floatbar:sticky:off,default:visible,show:fullscreen $rdp_scale
+
+  if [[ $keep_alive = false ]]; then
+    echo "RDP closed — stopping Windows VM..."
+    docker compose -f "$COMPOSE_FILE" down
+  else
+    echo "RDP closed — VM still running (stop: windows-vm stop)"
+  fi
+}
+
+case "$1" in
+  launch) launch "$2" ;;
+  stop) docker compose -f "$COMPOSE_FILE" down && echo "Windows VM stopped" ;;
+  status) docker inspect --format='{{.Name}}: {{.State.Status}}' "$CONTAINER" 2>/dev/null || echo "not found" ;;
+  console) xdg-open "http://127.0.0.1:8006" ;;
+  *) echo "usage: windows-vm [launch [-k]|stop|status|console]" ;;
+esac
