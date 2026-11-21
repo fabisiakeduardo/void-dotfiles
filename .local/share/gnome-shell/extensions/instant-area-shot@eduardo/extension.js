@@ -1,12 +1,12 @@
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import Meta from 'gi://Meta';
-import Shell from 'gi://Shell';
+import {Screenshot} from 'resource:///org/gnome/shell/ui/screenshot.js';
 
 export default class InstantAreaShotExtension {
     enable() {
         this._action = global.display.grab_accelerator(
-            '<Control><Shift>s', Meta.KeyBindingFlags.NONE);
+            '<Super><Shift>s', Meta.KeyBindingFlags.NONE);
         this._signal = global.display.connect(
             'accelerator-activated',
             (_d, action) => {
@@ -27,9 +27,9 @@ export default class InstantAreaShotExtension {
     }
 
     _select() {
-        const shot = new Shell.Screenshot();
+        const shot = new Screenshot();
         shot.select_area((x, y, w, h) => {
-            if (w <= 0 || h <= 0)
+            if (!w || w <= 0 || !h || h <= 0)
                 return;
             const dir = GLib.build_filenamev(
                 [GLib.get_home_dir(), 'Pictures', 'Screenshots']);
