@@ -1,0 +1,5 @@
+[tools]
+bun = "latest"
+java = "temurin-21"
+node = "lts"
+python = "latest"

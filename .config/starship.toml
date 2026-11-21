@@ -1,0 +1,79 @@
+# Void-macOS-OLED — Starship Prompt (Minimal macOS / Omarchy Aesthetic)
+"$schema" = 'https://starship.rs/config-schema.json'
+
+add_newline = true
+command_timeout = 1000
+
+format = """
+$directory\
+$git_branch\
+$git_status\
+$nodejs\
+$python\
+$java\
+$rust\
+$bun\
+$cmd_duration\
+$line_break\
+$character"""
+
+[character]
+success_symbol = "[❯](bold #ff8c38)"
+error_symbol = "[❯](bold #ff5f56)"
+vimcmd_symbol = "[❮](bold #34d399)"
+
+[directory]
+style = "bold #f5f5f7"
+truncation_length = 3
+truncate_to_repo = true
+read_only = " 󰌾"
+read_only_style = "#ff5f56"
+
+[git_branch]
+symbol = " "
+format = "on [$symbol$branch]($style) "
+style = "bold #ff8c38"
+
+[git_status]
+format = '([$all_status$ahead_behind]($style) )'
+style = "#fbbf24"
+conflicted = "!"
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+untracked = "?"
+stashed = "$"
+modified = "~"
+staged = "+"
+renamed = "»"
+deleted = "✘"
+
+[nodejs]
+symbol = " "
+format = "[$symbol($version )]($style)"
+style = "#34d399"
+
+[python]
+symbol = " "
+format = "[$symbol($version )]($style)"
+style = "#60a5fa"
+
+[java]
+symbol = " "
+format = "[$symbol($version )]($style)"
+style = "#fb923c"
+
+[rust]
+symbol = " "
+format = "[$symbol($version )]($style)"
+style = "#f87171"
+
+[bun]
+symbol = " "
+format = "[$symbol($version )]($style)"
+style = "#fde047"
+
+[cmd_duration]
+min_time = 2000
+format = "[󰔛 $duration]($style) "
+style = "#71717a"

@@ -1,0 +1,71 @@
+# Void-macOS-OLED — Ghostty Configuration
+# Aesthetic: True OLED Dark + Gargantua Amber-Orange + macOS Minimalism
+
+# Typography
+font-family = JetBrainsMono Nerd Font
+font-size = 11.5
+font-feature = +liga
+font-feature = +calt
+adjust-cell-height = 6%
+
+# Window & Glass Surface
+window-padding-x = 16
+window-padding-y = 14
+window-padding-balance = true
+window-decoration = true
+gtk-titlebar = true
+gtk-tabs-location = top
+gtk-single-instance = true
+background-opacity = 0.88
+background-blur-radius = 24
+confirm-close-surface = false
+
+# Shell
+command = /usr/bin/fish
+shell-integration = fish
+shell-integration-features = cursor,sudo,title
+
+# Cursor & Selection
+cursor-style = bar
+cursor-style-blink = true
+cursor-color = #ff8c38
+cursor-text = #060608
+selection-background = #2c2018
+selection-foreground = #f5f5f7
+
+# Void-OLED Palette (Pure Deep Space + Warm Gargantua Accents)
+background = #060608
+foreground = #ededf0
+
+# Normal ANSI colors
+palette = 0=#141418
+palette = 1=#ff5f56
+palette = 2=#34d399
+palette = 3=#fbbf24
+palette = 4=#60a5fa
+palette = 5=#c084fc
+palette = 6=#38bdf8
+palette = 7=#d4d4d8
+
+# Bright ANSI colors
+palette = 8=#52525b
+palette = 9=#ff7b72
+palette = 10=#6ee7b7
+palette = 11=#ff8c38
+palette = 12=#93c5fd
+palette = 13=#d8b4fe
+palette = 14=#67e8f9
+palette = 15=#fafafa
+
+# Omarchy / macOS-inspired Terminal Keybinds
+keybind = ctrl+shift+d=new_split:right
+keybind = ctrl+shift+e=new_split:down
+keybind = ctrl+shift+w=close_surface
+keybind = ctrl+alt+left=goto_split:left
+keybind = ctrl+alt+right=goto_split:right
+keybind = ctrl+alt+up=goto_split:up
+keybind = ctrl+alt+down=goto_split:down
+keybind = ctrl+shift+t=new_tab
+keybind = ctrl+plus=increase_font_size:1
+keybind = ctrl+minus=decrease_font_size:1
+keybind = ctrl+zero=reset_font_size
