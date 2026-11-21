@@ -12,6 +12,7 @@ scrollback_editor "nvim"
 scroll_buffer_size 50000
 
 theme "void-oled"
+default_layout "compact"
 
 ui {
     pane_frames {
