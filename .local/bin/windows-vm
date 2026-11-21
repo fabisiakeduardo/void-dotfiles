@@ -4,37 +4,76 @@
 
 COMPOSE_FILE="$HOME/win11/docker-compose.yml"
 CONTAINER="windows11"
+LOG="/tmp/windows-vm.log"
+CONSOLE="http://127.0.0.1:8006"
+
+# RDP handshake probe: TCP alone isn't enough (docker-proxy accepts early),
+# so send an X.224 negotiation request and expect a response.
+rdp_ready() {
+  python3 - <<'EOF' 2>/dev/null
+import socket
+s = socket.create_connection(('127.0.0.1', 3389), timeout=3)
+s.sendall(bytes.fromhex('0300001311e000000000000100080003000000'))
+resp = s.recv(19)
+exit(0 if len(resp) >= 11 and resp[5] == 0xd0 else 1)
+EOF
+}
+
+wait_boot() {
+  local n=0
+  until docker logs "$CONTAINER" 2>&1 | grep -qi "windows started successfully"; do
+    sleep 3; (( ++n > 120 )) && return 1
+  done
+}
+
+wait_rdp() {
+  local n=0
+  until rdp_ready; do
+    sleep 5; (( ++n > 240 )) && return 1
+  done
+}
 
 launch() {
   local keep_alive=false
   [[ $1 = "--keep-alive" || $1 = "-k" ]] && keep_alive=true
 
   if [[ ! -f $COMPOSE_FILE ]]; then
-    echo "Windows VM not configured (missing $COMPOSE_FILE)"; exit 1
+    notify-send -u critical "Windows VM" "Missing $COMPOSE_FILE"; exit 1
   fi
 
   if [[ $(docker inspect --format='{{.State.Status}}' "$CONTAINER" 2>/dev/null) != "running" ]]; then
-    notify-send "Starting Windows VM" "This can take 15-30 seconds" -t 15000 2>/dev/null
-    docker compose -f "$COMPOSE_FILE" up -d || { notify-send -u critical "Windows VM" "Failed to start"; exit 1; }
-    local n=0
-    until docker logs "$CONTAINER" 2>&1 | grep -qi "windows started successfully"; do
-      sleep 2; (( ++n > 90 )) && { echo "Timeout waiting for Windows"; exit 1; }
-    done
+    notify-send "Windows VM" "Starting — first boot can take a few minutes" -t 15000
+    docker compose -f "$COMPOSE_FILE" up -d >>"$LOG" 2>&1 \
+      || { notify-send -u critical "Windows VM" "Failed to start container"; exit 1; }
+    wait_boot || { notify-send -u critical "Windows VM" "Boot timeout — see $CONSOLE"; exit 1; }
   fi
 
-  # GNOME scale -> RDP scale
+  if ! rdp_ready; then
+    notify-send "Windows VM" "Windows is still setting up — waiting for RDP…" -t 15000
+    wait_rdp || { notify-send -u critical "Windows VM" "RDP never came up — watch install at $CONSOLE"; exit 1; }
+  fi
+
   local scale rdp_scale=""
   scale=$(gsettings get org.gnome.desktop.interface scaling-factor 2>/dev/null | awk '{print $2}')
   [[ $scale =~ ^[0-9]+$ ]] && (( scale >= 2 )) && rdp_scale="/scale:180"
 
+  local t0=$SECONDS
   xfreerdp3 /u:"eduardo" /p:"admin" /v:127.0.0.1:3389 -grab-keyboard \
     /sound /microphone /clipboard /cert:ignore /title:"Windows 11" \
     /dynamic-resolution /gfx:AVC444 \
-    /floatbar:sticky:off,default:visible,show:fullscreen $rdp_scale
+    /floatbar:sticky:off,default:visible,show:fullscreen $rdp_scale \
+    >>"$LOG" 2>&1
+  local rc=$?
+
+  # Fast exit = connect failure, not a real session — keep VM alive and report.
+  if (( SECONDS - t0 < 20 || rc != 0 )); then
+    notify-send -u critical "Windows VM" "RDP failed (exit $rc) — see $LOG ; VM kept running"
+    echo "RDP failed (exit $rc) — see $LOG"; exit $rc
+  fi
 
   if [[ $keep_alive = false ]]; then
     echo "RDP closed — stopping Windows VM..."
-    docker compose -f "$COMPOSE_FILE" down
+    docker compose -f "$COMPOSE_FILE" down >>"$LOG" 2>&1
   else
     echo "RDP closed — VM still running (stop: windows-vm stop)"
   fi
@@ -43,7 +82,10 @@ launch() {
 case "$1" in
   launch) launch "$2" ;;
   stop) docker compose -f "$COMPOSE_FILE" down && echo "Windows VM stopped" ;;
-  status) docker inspect --format='{{.Name}}: {{.State.Status}}' "$CONTAINER" 2>/dev/null || echo "not found" ;;
-  console) xdg-open "http://127.0.0.1:8006" ;;
+  status)
+    docker inspect --format='{{.Name}}: {{.State.Status}}' "$CONTAINER" 2>/dev/null || echo "not found"
+    rdp_ready && echo "rdp: ready" || echo "rdp: not ready"
+    ;;
+  console) xdg-open "$CONSOLE" ;;
   *) echo "usage: windows-vm [launch [-k]|stop|status|console]" ;;
 esac
