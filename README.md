@@ -23,7 +23,7 @@ Pure OLED black + Gargantua amber (`#ff8c38`) everywhere.
 ## Install (bare repo method)
 
 ```bash
-git clone --bare https://github.com/fabisiakeduardo/dotfiles.git $HOME/.dotfiles
+git clone --bare https://github.com/fabisiakeduardo/void-dotfiles.git $HOME/.dotfiles
 alias dotfiles='git --git-dir=$HOME/.dotfiles --work-tree=$HOME'
 dotfiles checkout
 dotfiles config --local status.showUntrackedFiles no
