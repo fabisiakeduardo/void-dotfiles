@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.instant-area-shot"
+          path="/org/gnome/shell/extensions/instant-area-shot/">
+    <key name="binding" type="as">
+      <default>['&lt;Super&gt;&lt;Shift&gt;s']</default>
+      <summary>Area screenshot shortcut</summary>
+      <description>Accelerator for instant area screenshot to file and clipboard.</description>
+    </key>
+  </schema>
+</schemalist>

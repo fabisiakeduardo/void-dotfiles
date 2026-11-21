@@ -35,3 +35,4 @@ themes {
         orange "#ff8c38"
     }
 }
+show_startup_tips false

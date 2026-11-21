@@ -1,7 +1,8 @@
 {
   "uuid": "instant-area-shot@eduardo",
   "name": "Instant Area Screenshot",
-  "description": "Ctrl+Shift+S: pure crosshair area select -> file + clipboard. No dialog.",
+  "description": "Super+Shift+S: pure crosshair area select -> file + clipboard. No dialog.",
   "shell-version": ["51"],
-  "version": 1
+  "settings-schema": "org.gnome.shell.extensions.instant-area-shot",
+  "version": 2
 }
