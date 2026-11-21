@@ -6,7 +6,8 @@ Pure OLED black + Gargantua amber (`#ff8c38`) everywhere.
 ## Stack
 
 - **OS**: Arch Linux, GNOME 51 (Wayland, 1080p@144Hz)
-- **Terminal**: ghostty + fish + starship + tmux
+- **Terminal**: ghostty + fish + starship + zellij (`void-oled` theme,
+  session resurrection via serialization)
 - **Editor**: neovim (LazyVim), VS Code
 - **CLI**: fzf, zoxide, eza, bat, ripgrep, fd, delta, btop, mise
 - **Launcher**: [Vicinae](https://github.com/vicinaehq/vicinae) on `Super+Space`

@@ -1,0 +1,36 @@
+// Void-macOS-OLED — Zellij Configuration
+// OLED black + Gargantua amber (#ff8c38)
+
+default_shell "fish"
+copy_command "wl-copy"
+copy_on_select true
+mouse_mode true
+pane_frames true
+session_serialization true
+serialize_pane_viewport true
+scrollback_editor "nvim"
+scroll_buffer_size 50000
+
+theme "void-oled"
+
+ui {
+    pane_frames {
+        rounded_corners true
+    }
+}
+
+themes {
+    void-oled {
+        fg "#ededf0"
+        bg "#060608"
+        black "#141418"
+        red "#ff5f56"
+        green "#34d399"
+        yellow "#fbbf24"
+        blue "#60a5fa"
+        magenta "#c084fc"
+        cyan "#38bdf8"
+        white "#d4d4d8"
+        orange "#ff8c38"
+    }
+}
