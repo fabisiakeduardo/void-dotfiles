@@ -1,0 +1,7 @@
+{
+  "uuid": "instant-area-shot@eduardo",
+  "name": "Instant Area Screenshot",
+  "description": "Ctrl+Shift+S: pure crosshair area select -> file + clipboard. No dialog.",
+  "shell-version": ["51"],
+  "version": 1
+}
