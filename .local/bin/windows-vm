@@ -29,14 +29,15 @@ wait_boot() {
 wait_rdp() {
   local n=0
   until rdp_ready; do
-    sleep 5; (( ++n > 240 )) && return 1
+    sleep 5; (( ++n > 12 )) && return 1
   done
 }
 
-launch() {
-  local keep_alive=false
-  [[ $1 = "--keep-alive" || $1 = "-k" ]] && keep_alive=true
+open_console() {
+  zen-browser --new-window "$CONSOLE" >>"$LOG" 2>&1 &
+}
 
+launch() {
   if [[ ! -f $COMPOSE_FILE ]]; then
     notify-send -u critical "Windows VM" "Missing $COMPOSE_FILE"; exit 1
   fi
@@ -48,34 +49,34 @@ launch() {
     wait_boot || { notify-send -u critical "Windows VM" "Boot timeout — see $CONSOLE"; exit 1; }
   fi
 
-  if ! rdp_ready; then
-    notify-send "Windows VM" "Windows is still setting up — waiting for RDP…" -t 15000
-    wait_rdp || { notify-send -u critical "Windows VM" "RDP never came up — watch install at $CONSOLE"; exit 1; }
-  fi
+  # Prefer native RDP when the guest's RDP stack answers; otherwise fall back
+  # to the noVNC web console (works on every build, incl. broken-RDP 25H2).
+  if rdp_ready || wait_rdp; then
+    local scale rdp_scale=""
+    scale=$(gsettings get org.gnome.desktop.interface scaling-factor 2>/dev/null | awk '{print $2}')
+    [[ $scale =~ ^[0-9]+$ ]] && (( scale >= 2 )) && rdp_scale="/scale:180"
 
-  local scale rdp_scale=""
-  scale=$(gsettings get org.gnome.desktop.interface scaling-factor 2>/dev/null | awk '{print $2}')
-  [[ $scale =~ ^[0-9]+$ ]] && (( scale >= 2 )) && rdp_scale="/scale:180"
+    local t0=$SECONDS
+    xfreerdp3 /u:"eduardo" /p:"admin" /v:127.0.0.1:3389 -grab-keyboard \
+      /sound /microphone /clipboard /cert:ignore /title:"Windows 11" \
+      /dynamic-resolution /gfx:AVC444 \
+      /floatbar:sticky:off,default:visible,show:fullscreen $rdp_scale \
+      >>"$LOG" 2>&1
+    local rc=$?
 
-  local t0=$SECONDS
-  xfreerdp3 /u:"eduardo" /p:"admin" /v:127.0.0.1:3389 -grab-keyboard \
-    /sound /microphone /clipboard /cert:ignore /title:"Windows 11" \
-    /dynamic-resolution /gfx:AVC444 \
-    /floatbar:sticky:off,default:visible,show:fullscreen $rdp_scale \
-    >>"$LOG" 2>&1
-  local rc=$?
+    # Fast exit = connect failure, not a real session — fall back to console.
+    if (( SECONDS - t0 < 20 || rc != 0 )); then
+      notify-send "Windows VM" "RDP unavailable — opening web console instead"
+      open_console
+      exit $rc
+    fi
 
-  # Fast exit = connect failure, not a real session — keep VM alive and report.
-  if (( SECONDS - t0 < 20 || rc != 0 )); then
-    notify-send -u critical "Windows VM" "RDP failed (exit $rc) — see $LOG ; VM kept running"
-    echo "RDP failed (exit $rc) — see $LOG"; exit $rc
-  fi
-
-  if [[ $keep_alive = false ]]; then
-    echo "RDP closed — stopping Windows VM..."
-    docker compose -f "$COMPOSE_FILE" down >>"$LOG" 2>&1
+    [[ $1 = "-k" || $1 = "--keep-alive" ]] || {
+      echo "RDP closed — stopping Windows VM..."
+      docker compose -f "$COMPOSE_FILE" down >>"$LOG" 2>&1; }
   else
-    echo "RDP closed — VM still running (stop: windows-vm stop)"
+    notify-send "Windows VM" "Opening web console"
+    open_console
   fi
 }
 
