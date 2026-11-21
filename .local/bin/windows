@@ -1,0 +1,10 @@
+#!/bin/bash
+# Windows 11 (dockur/windows) — start the VM and open the console
+cd "$HOME/win11" || exit 1
+docker compose up -d --quiet-pull 2>/dev/null
+# wait for the web console
+for _ in $(seq 1 60); do
+  curl -sf -o /dev/null http://127.0.0.1:8006/ && break
+  sleep 2
+done
+xdg-open http://127.0.0.1:8006/ &

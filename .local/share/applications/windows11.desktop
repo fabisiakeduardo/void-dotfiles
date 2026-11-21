@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Windows 11
+Comment=Windows 11 VM (Docker/KVM)
+Exec=/home/eduardo/.local/bin/windows
+Icon=/home/eduardo/.local/share/icons/windows.png
+Type=Application
+Categories=System;
+Keywords=windows;vm;docker;
+StartupNotify=true
