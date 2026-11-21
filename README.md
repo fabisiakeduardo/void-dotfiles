@@ -9,6 +9,11 @@ Pure OLED black + Gargantua amber (`#ff8c38`) everywhere.
 - **Terminal**: ghostty + fish + starship + tmux
 - **Editor**: neovim (LazyVim), VS Code
 - **CLI**: fzf, zoxide, eza, bat, ripgrep, fd, delta, btop, mise
+- **Launcher**: [Vicinae](https://github.com/vicinaehq/vicinae) on `Super+Space`
+  (Raycast-style; extracted AppImage at `~/.local/share/vicinae-app`,
+  custom `void-oled` theme)
+- **Themes**: `adw-gtk3-dark` GTK, `macOS` cursor
+  ([apple_cursor](https://github.com/ful1e5/apple_cursor)), Papirus-Dark icons
 - **GNOME ext**: Tiling Shell, Blur My Shell, Just Perfection, Space Bar,
   AppIndicator, user-theme (`Void-macOS-OLED`), Hanabi (live wallpaper)
 

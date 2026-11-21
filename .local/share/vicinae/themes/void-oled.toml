@@ -1,0 +1,61 @@
+# Void OLED — Gargantua Amber
+# Matches the Void-macOS-OLED rice: pure black surfaces + #ff8c38 amber accent
+
+[meta]
+name = "Void OLED"
+description = "Pure OLED black with Gargantua amber accents"
+variant = "dark"
+inherits = "vicinae-dark"
+
+[colors.core]
+accent = "#ff8c38"
+accent_foreground = "#060608"
+background = "#060608"
+foreground = "#ededf0"
+secondary_background = "#0c0c0f"
+border = "#27272a"
+
+[colors.accents]
+blue = "#60a5fa"
+green = "#34d399"
+magenta = "#c084fc"
+orange = "#ff8c38"
+red = "#ff5f56"
+yellow = "#fbbf24"
+cyan = "#38bdf8"
+purple = "#c084fc"
+
+[colors.text]
+default = "colors.core.foreground"
+muted = "#a1a1aa"
+danger = "#ff5f56"
+success = "#34d399"
+placeholder = "#71717a"
+selection = { background = "#ff8c38", foreground = "#060608" }
+
+[colors.text.links]
+default = "#fbbf24"
+visited = "#c084fc"
+
+[colors.input]
+border = "#27272a"
+border_focus = "#ff8c38"
+border_error = "#ff5f56"
+
+[colors.list.item.selection]
+background = "#2c2018"
+secondary_background = "#1c130d"
+foreground = "#f5f5f7"
+secondary_foreground = "#ffb36b"
+
+[colors.grid.item]
+background = "#0c0c0f"
+hover = { outline = "#71717a" }
+selection = { outline = "#ff8c38" }
+
+[colors.scrollbars]
+background = "#27272a"
+
+[colors.loading]
+bar = "#ff8c38"
+spinner = "#ffb36b"

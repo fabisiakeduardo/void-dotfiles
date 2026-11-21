@@ -169,11 +169,10 @@ if status is-interactive
     alias ... 'cd ../..'
     alias cls 'clear'
 
-    function blackhole-restart --description "Restart Hidamari animated black hole wallpaper"
-        flatpak kill io.github.jeffshee.Hidamari 2>/dev/null
-        systemctl --user stop hidamari-live.service 2>/dev/null
-        systemctl --user reset-failed hidamari-live.service 2>/dev/null
-        systemd-run --user --unit=hidamari-live flatpak run io.github.jeffshee.Hidamari --background >/dev/null 2>&1
+    function blackhole-restart --description "Restart Hanabi animated black hole wallpaper"
+        gnome-extensions disable hanabi-extension@jeffshee.github.io 2>/dev/null
+        sleep 1
+        gnome-extensions enable hanabi-extension@jeffshee.github.io
         echo "Black hole live wallpaper restarted."
     end
 end
