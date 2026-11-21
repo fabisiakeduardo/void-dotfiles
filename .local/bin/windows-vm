@@ -26,10 +26,24 @@ wait_boot() {
   done
 }
 
-wait_rdp() {
+vnc_ready() {
+  python3 - <<'EOF' 2>/dev/null
+import socket, subprocess
+ip = subprocess.check_output(
+    ['docker', 'inspect', '-f',
+     '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}',
+     'windows11'], text=True).strip()
+s = socket.create_connection((ip, 5900), timeout=3)
+ok = s.recv(12).startswith(b'RFB')
+s.close()
+exit(0 if ok else 1)
+EOF
+}
+
+wait_vnc() {
   local n=0
-  until rdp_ready; do
-    sleep 5; (( ++n > 12 )) && return 1
+  until vnc_ready; do
+    sleep 3; (( ++n > 40 )) && return 1
   done
 }
 
@@ -74,8 +88,16 @@ launch() {
     [[ $1 = "-k" || $1 = "--keep-alive" ]] || {
       echo "RDP closed — stopping Windows VM..."
       docker compose -f "$COMPOSE_FILE" down >>"$LOG" 2>&1; }
+    return
+  fi
+
+  # Native VNC window (GtkVnc) — real app window over the QEMU display.
+  if wait_vnc; then
+    "$HOME/.local/bin/windows-view" >>"$LOG" 2>&1
+    [[ $1 = "-k" || $1 = "--keep-alive" ]] || {
+      docker compose -f "$COMPOSE_FILE" down >>"$LOG" 2>&1; }
   else
-    notify-send "Windows VM" "Opening web console"
+    notify-send "Windows VM" "Display not reachable — opening web console"
     open_console
   fi
 }
