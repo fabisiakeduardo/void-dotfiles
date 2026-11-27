@@ -51,7 +51,6 @@ sudo pacman -S --needed --noconfirm \
   yq \
   curlie \
   tmux \
-  zellij \
   tealdeer \
   uv \
   docker \

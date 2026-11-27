@@ -186,8 +186,3 @@ if type -q atuin
 end
 
 alias lzd 'lazydocker'
-
-# Zellij — auto-attach to 'main' session (ghostty interactive only)
-if status is-interactive; and not set -q ZELLIJ; and test "$TERM_PROGRAM" = "ghostty"
-    zellij attach -c main
-end
